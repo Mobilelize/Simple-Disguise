@@ -15,7 +15,6 @@ public class OnPlayerRender implements Listener {
     @EventHandler
     public void onPlayerTrack(PlayerTrackEntityEvent event) {
         if (event.getEntity() instanceof Player loadPlayer){
-            provider.getInfo(loadPlayer).getEntityType();
             if (provider.isDisguisedAsEntity(loadPlayer))
             {
                 provider.disguise(loadPlayer, Disguise.builder().setEntityType(provider.getInfo(loadPlayer).getEntityType()).build());
