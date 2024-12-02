@@ -41,17 +41,14 @@ public class DisguiseOn {
 
         DisguiseResponse response = provider.disguise(player, builder.build());
 
-        switch (response){
-            case SUCCESS -> {
-                if (isTypeOfEntity){
-                    sender.sendMessage(ChatColor.RED + provider.getInfo(Bukkit.getPlayerExact(args[0])).getName() + ChatColor.GOLD + " has been disguised as an " + ChatColor.RED + targetDisguise);
-                } else {
-                    sender.sendMessage(ChatColor.RED + provider.getInfo(Bukkit.getPlayerExact(args[0])).getName() + ChatColor.GOLD + " has been disguised as " + ChatColor.RED + targetDisguise);
-                }
+        if (response == DisguiseResponse.SUCCESS) {
+            if (isTypeOfEntity) {
+                sender.sendMessage(ChatColor.RED + provider.getInfo(Bukkit.getPlayerExact(args[0])).getName() + ChatColor.GOLD + " has been disguised as an " + ChatColor.RED + targetDisguise);
+            } else {
+                sender.sendMessage(ChatColor.RED + provider.getInfo(Bukkit.getPlayerExact(args[0])).getName() + ChatColor.GOLD + " has been disguised as " + ChatColor.RED + targetDisguise);
             }
-            case null, default -> {
-                sender.sendMessage(ChatColor.RED + "Disguise failed: " + response.toString().toLowerCase().replace('_', ' '));
-            }
+        } else {
+            sender.sendMessage(ChatColor.RED + "Disguise failed: " + response.toString().toLowerCase().replace('_', ' '));
         }
     }
 
@@ -75,17 +72,15 @@ public class DisguiseOn {
 
         DisguiseResponse response = provider.disguise(player, builder.build());
 
-        switch (response){
-            case SUCCESS -> {
-                if (isTypeOfEntity){
-                    sender.sendMessage(ChatColor.GOLD + "You're now disguised as an " + ChatColor.RED + targetDisguise);;
-                } else {
-                    sender.sendMessage(ChatColor.GOLD + "You're now disguised as " + ChatColor.RED + targetDisguise);
-                }
+        if (response == DisguiseResponse.SUCCESS) {
+            if (isTypeOfEntity) {
+                sender.sendMessage(ChatColor.GOLD + "You're now disguised as an " + ChatColor.RED + targetDisguise);
+                ;
+            } else {
+                sender.sendMessage(ChatColor.GOLD + "You're now disguised as " + ChatColor.RED + targetDisguise);
             }
-            case null, default -> {
-                sender.sendMessage(ChatColor.RED + "Disguise failed: " + response.toString().toLowerCase().replace('_', ' '));
-            }
+        } else {
+            sender.sendMessage(ChatColor.RED + "Disguise failed: " + response.toString().toLowerCase().replace('_', ' '));
         }
     }
 

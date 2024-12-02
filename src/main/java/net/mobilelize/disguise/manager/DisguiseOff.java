@@ -17,12 +17,10 @@ public class DisguiseOff {
         Player player = Bukkit.getServer().getPlayerExact(nameOfPlayer);
         UndisguiseResponse response = provider.undisguise(player);
 
-        switch (response){
-            case SUCCESS -> {
-                sender.sendMessage(ChatColor.GOLD + "The player " + ChatColor.RED + player.getName() + ChatColor.GOLD + " has been successfully undisguised");
-            } case null, default -> {
-                sender.sendMessage(ChatColor.RED + "Undisguise failed: " + response.toString().toLowerCase().replace('_', ' '));
-            }
+        if (response == UndisguiseResponse.SUCCESS) {
+            sender.sendMessage(ChatColor.GOLD + "The player " + ChatColor.RED + player.getName() + ChatColor.GOLD + " has been successfully undisguised");
+        } else {
+            sender.sendMessage(ChatColor.RED + "Undisguise failed: " + response.toString().toLowerCase().replace('_', ' '));
         }
     }
 
@@ -31,12 +29,10 @@ public class DisguiseOff {
         Player player = (Player) sender;
         UndisguiseResponse response = provider.undisguise(player);
 
-        switch (response){
-            case SUCCESS -> {
-                sender.sendMessage(ChatColor.GOLD + "You have been successfully undisguised");
-            } case null, default -> {
-                sender.sendMessage(ChatColor.RED + "Undisguise failed: " + response.toString().toLowerCase().replace('_', ' '));
-            }
+        if (response == UndisguiseResponse.SUCCESS) {
+            sender.sendMessage(ChatColor.GOLD + "You have been successfully undisguised");
+        } else {
+            sender.sendMessage(ChatColor.RED + "Undisguise failed: " + response.toString().toLowerCase().replace('_', ' '));
         }
     }
 
