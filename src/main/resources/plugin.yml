@@ -1,0 +1,12 @@
+name: Disguise
+version: '1.0.0'
+main: net.mobilelize.disguise.Disguise
+api-version: '1.21'
+authors: [ Mobilelize ]
+description: A simple Disguise plugin
+commands:
+  disguise:
+    description: Disguise yourself as a mob or player.
+    usage: /disguise
+    permission:
+      mobilelize.disguise
