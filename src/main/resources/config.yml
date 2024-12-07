@@ -1,0 +1,62 @@
+# Plugin Configuration File
+# Detailed explanations of each setting are provided below.
+
+# Allows the use of disguise-related commands like /skin and /name.
+# If set to true, players will be able to use these commands to change their skin or name.
+allow-commands:
+  skin: true # Enable or disable the /skin command.
+  name: true # Enable or disable the /name command.
+
+# Command cooldown configuration
+command-cooldown:
+  cooldown: 10 # Cooldown time in seconds. Set to 0 for no cooldown.
+
+# Allows duplicate logins. If set to true, multiple players can log in with the same username.
+# The plugin will handle this scenario by preventing automatic kicks, but only if their real usernames are different.
+allow-duplicate-login:
+  enabled: true # If true, allows duplicate logins.
+  check-real-username: true # Recommended: Ensures name integrity and prevents conflicts.
+
+  # Action to take when a duplicate player joins the game.
+  # Options:
+  # - disguise-joining-player: Disguises the joining player to avoid conflicts, Note: this won't avoid all conflicts just some of them.
+  # - undisguise-existing-player: Undisguises the already online player.
+  # - none: Takes no action beyond allowing the duplicate login.
+  action: disguise-joining-player # Action to perform when a duplicate player logs in.
+
+  # Random name generation for disguising duplicate login players. if all fails player won't be disguised.
+  random-name:
+    enabled: true # If true, a modified or random names are assigned to players logging in with duplicate usernames.
+    force-use-list: false # If true, always use the random name list instead of modifying usernames.
+    list: # List of pre-defined random names to use if modifying usernames fails or is forced.
+      - RandomName1
+      - RandomName2
+      - RandomName3
+    max-modifiable-length: 13 # If a player's name exceeds this length, a name from the list will be used instead.
+    delay: 1000 # Delay in milliseconds before applying the disguise to a joining player.
+
+# Automatically execute commands without requiring players to add "-c" (command mode) to their input.
+auto-command:
+  enabled: true # If true, disguise-related commands like /disguise help will run automatically. without the need of the "-c" (command mode).
+
+# Configuration for handling the "-r" flag (real name behavior).
+# If enabled, the plugin will get the real name of the player or all players instead of undisguising them
+# when their name is entered in the disguise command. The "-f" (force mode) is required to undisguise instead.
+real-name-behavior:
+  enabled: true # If true, gets real names of disguised players without needing the "-r" flag.
+  force: false # If true, requires the "-f" (force mode) flag to disguise as a player.
+  apply-to-all: false # If true, applies the real name behavior to all players when "*" is entered in the disguise command.
+
+# Blacklist of names players are not allowed to disguise as.
+# If enabled, players cannot use these names for disguises.
+name-blacklist:
+  enabled: false # If true, enforces the blacklist of prohibited names.
+  names: # List of blacklisted names.
+    - Notch
+    - Herobrine
+    - Admin
+
+# Configuration for mob disguises.
+mob-disguise:
+  auto-detect: true # If true, automatically detect and apply mob disguises when valid mob names are entered. needed use of (-f flag) for normal disguise
+  override-real-name: true # If true, mobs are not affected by the real-name behavior (-r flag). only if auto-detect is true.

@@ -11,54 +11,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class tabCompleter implements TabCompleter {
+public class DisguiseTabCompleter implements TabCompleter {
 
-    List<String> entityNames = Arrays.asList(
-            "item",
-            "experience_orb",
-            "area_effect_cloud",
+    public final List<String> entityNames = Arrays.asList(
             "elder_guardian",
             "wither_skeleton",
             "stray",
-            "egg",
-            "leash_knot",
-            "painting",
-            "arrow",
-            "snowball",
-            "fireball",
-            "small_fireball",
-            "ender_pearl",
-            "eye_of_ender",
-            "potion",
-            "experience_bottle",
-            "item_frame",
-            "wither_skull",
-            "tnt",
-            "falling_block",
-            "firework_rocket",
             "husk",
-            "spectral_arrow",
-            "shulker_bullet",
-            "dragon_fireball",
             "zombie_villager",
             "skeleton_horse",
             "zombie_horse",
-            "armor_stand",
             "donkey",
             "mule",
-            "evoker_fangs",
             "evoker",
             "vex",
             "vindicator",
             "illusioner",
-            "command_block_minecart",
-            "boat",
-            "minecart",
-            "chest_minecart",
-            "furnace_minecart",
-            "tnt_minecart",
-            "hopper_minecart",
-            "spawner_minecart",
             "creeper",
             "skeleton",
             "spider",
@@ -120,29 +88,18 @@ public class tabCompleter implements TabCompleter {
             "zoglin",
             "piglin_brute",
             "axolotl",
-            "glow_item_frame",
             "glow_squid",
             "goat",
-            "marker",
             "allay",
-            "chest_boat",
             "frog",
             "tadpole",
             "warden",
             "camel",
-            "block_display",
-            "interaction",
-            "item_display",
             "sniffer",
-            "text_display",
             "breeze",
-            "wind_charge",
             "breeze_wind_charge",
             "armadillo",
             "bogged",
-            "ominous_item_spawner",
-            "fishing_bobber",
-            "lightning_bolt",
             "player"
     );
 
@@ -153,9 +110,21 @@ public class tabCompleter implements TabCompleter {
             List<String> completions = new ArrayList<>();
             String input = args[0].toLowerCase(); // Input text the user is typing
 
+            List<String> commands = Arrays.asList("help", "reload");
+
             // Add the "*" option only if it matches the input
             if ("*".startsWith(input)) {
                 completions.add("*");
+            }
+
+            if ("-r".startsWith(input)) {
+                completions.add("-r");
+            }
+
+            for (String thisCommand : commands) {
+                if (thisCommand.startsWith(input)) {
+                    completions.add(thisCommand);
+                }
             }
 
             // Filter and add entity names that match the input
@@ -178,22 +147,29 @@ public class tabCompleter implements TabCompleter {
             String input = Arrays.stream(args).toList().getLast().toLowerCase(); // Input text the user is typing
 
             // Add the "-m" option only if it matches the input
-            if ("-m".startsWith(input)) {
-                completions.add("-m");
-            }
+            List<String> flags = Arrays.asList("-m", "-n", "-s", "-c", "-f", "-r");
 
-            // Filter and add entity names that match the input
-            for (String entityName : entityNames) { // Assume entityNames is predefined
-                if (entityName.toLowerCase().startsWith(input)) {
-                    completions.add(entityName);
+            // Add matching flags to completions
+            for (String flag : flags) {
+                if (flag.startsWith(input)) {
+                    completions.add(flag);
                 }
             }
 
-            // Filter and add player names that match the input
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                String playerName = onlinePlayer.getName();
-                if (playerName.toLowerCase().startsWith(input)) {
-                    completions.add(playerName);
+            if (args.length < 3){
+                // Filter and add entity names that match the input
+                for (String entityName : entityNames) { // Assume entityNames is predefined
+                    if (entityName.toLowerCase().startsWith(input)) {
+                        completions.add(entityName);
+                    }
+                }
+
+                // Filter and add player names that match the input
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    String playerName = onlinePlayer.getName();
+                    if (playerName.toLowerCase().startsWith(input)) {
+                        completions.add(playerName);
+                    }
                 }
             }
             return completions;

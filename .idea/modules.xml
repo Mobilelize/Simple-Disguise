@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Disguise.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Disguise.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SimpleDisguise.main.iml" filepath="$PROJECT_DIR$/.idea/modules/SimpleDisguise.main.iml" />
     </modules>
   </component>
 </project>

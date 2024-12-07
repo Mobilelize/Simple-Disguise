@@ -10,11 +10,17 @@ import org.bukkit.entity.Player;
 
 public class DisguiseOff {
 
-    private static final DisguiseProvider provider = DisguiseManager.getProvider();
+    private final DisguiseProvider provider = DisguiseManager.getProvider();
 
-    public static void asPlayer(String nameOfPlayer, CommandSender sender){
+    public void asPlayer(String nameOfPlayer, CommandSender sender){
 
-        Player player = Bukkit.getServer().getPlayerExact(nameOfPlayer);
+        final Player player = Bukkit.getPlayerExact(nameOfPlayer);
+
+        if (player.isDead()){
+            sender.sendMessage(ChatColor.GOLD + "The player " + ChatColor.RED + player.getName() + ChatColor.GOLD + " is dead and can't be disguised");
+            return;
+        }
+
         UndisguiseResponse response = provider.undisguise(player);
 
         if (response == UndisguiseResponse.SUCCESS) {
@@ -24,9 +30,15 @@ public class DisguiseOff {
         }
     }
 
-    public static void asSender(CommandSender sender){
+    public void asSender(CommandSender sender){
 
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
+
+        if (player.isDead()){
+            sender.sendMessage(ChatColor.GOLD + "You are dead and can't be undisguised");
+            return;
+        }
+
         UndisguiseResponse response = provider.undisguise(player);
 
         if (response == UndisguiseResponse.SUCCESS) {
@@ -36,7 +48,7 @@ public class DisguiseOff {
         }
     }
 
-    public static void all(CommandSender sender){
+    public void all(CommandSender sender){
 
         int totalPlayers = 0;
         int successfulActions = 0;
@@ -45,7 +57,12 @@ public class DisguiseOff {
         for (Player player : Bukkit.getOnlinePlayers()) {
             totalPlayers++;
 
-            UndisguiseResponse response = provider.undisguise(player);
+            UndisguiseResponse response;
+            if (!player.isDead()){
+                response = provider.undisguise(player);
+            } else {
+                response = UndisguiseResponse.FAIL_PROFILE_NOT_FOUND;
+            }
             if (response == UndisguiseResponse.SUCCESS){
                 successfulActions++;
             }

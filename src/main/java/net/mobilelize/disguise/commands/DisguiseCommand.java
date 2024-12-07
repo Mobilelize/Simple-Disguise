@@ -1,27 +1,22 @@
 package net.mobilelize.disguise.commands;
 
-import dev.iiahmed.disguise.*;
+import net.mobilelize.disguise.Disguise;
 import net.mobilelize.disguise.manager.DisguiseOff;
 import net.mobilelize.disguise.manager.DisguiseOn;
+import net.mobilelize.disguise.tabCompleter.DisguiseTabCompleter;
+import net.mobilelize.disguise.util.Cooldown;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 
 public class DisguiseCommand implements CommandExecutor {
 
-    private final DisguiseProvider provider = DisguiseManager.getProvider();
-
-    final Plugin plugin;
-
-    public DisguiseCommand(Plugin plugin) {
-        this.plugin = plugin;
-    }
+    private final DisguiseTabCompleter tabCompleter = new DisguiseTabCompleter();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -31,44 +26,85 @@ public class DisguiseCommand implements CommandExecutor {
             return false;
         }
 
+        final DisguiseOff disguiseOff = new DisguiseOff();
+        final DisguiseOn disguiseOn = new DisguiseOn();
+
         switch (args.length) {
             case 0 -> {
-                DisguiseOff.asSender(sender);
+                disguiseOff.asSender(sender);
                 return true;
             }
             case 1 -> {
-                if (Bukkit.getPlayerExact(args[0]) != null) {
-                    if (isSender(sender, args)) {
-                        DisguiseOff.asSender(sender);
+                if (Disguise.getConfigManager().isAutoCommandEnabled() && isCommand(args[0])){
+                  disguiseOn.executeCommands(args[0], sender);
+                } else if (Disguise.getConfigManager().isRealNameBehaviorEnabled() && Bukkit.getPlayerExact(args[0]) != null) {
+                    final String[] newArgs = new String[] { args[0], "-r"};
+                    if (isSender(sender, args)){
+                        disguiseOn.asSender(args[0], sender, newArgs);
                     } else {
-                        DisguiseOff.asPlayer(args[0], sender);
+                        disguiseOn.asPlayer(args[0], args[0], sender, newArgs);
+                    }
+                } else if (Disguise.getConfigManager().isMobAutoDetect() && tabCompleter.entityNames.contains(args[0].toLowerCase()) && mobCheck()) {
+                    final String[] newArgs = new String[] { args[0], "-m"};
+                    disguiseOn.asSender(args[0].toLowerCase(), sender, newArgs);
+                } else if (Bukkit.getPlayerExact(args[0]) != null) {
+                    if (isSender(sender, args)) {
+                        disguiseOff.asSender(sender);
+                    } else {
+                        disguiseOff.asPlayer(args[0], sender);
                     }
                 } else if (args[0].equals("*")) {
-                    DisguiseOff.all(sender);
+                    if (Disguise.getConfigManager().isRealNameApplyToAll()){
+                        final String[] newArgs = new String[] { args[0], "-r"};
+                        disguiseOn.all("all", sender, newArgs);
+                    } else {
+                        disguiseOff.all(sender);
+                    }
                 } else {
-                    DisguiseOn.asSender(args[0], sender, args);
+                    if (Disguise.getConfigManager().isRealNameBehaviorForce()){
+                        final String[] newArgs = new String[] { args[0], "-r"};
+                        disguiseOn.asPlayer(args[0], args[0], sender, newArgs);
+                    } else {
+                        disguiseOn.asSender(args[0], sender, args);
+                    }
+
                 }
                 return true;
             }
             case 2 -> {
                 if (args[0].equals("*")) {
-                    DisguiseOn.all(args[1], sender, args);
-                } else if (Arrays.stream(args).toList().getLast().equalsIgnoreCase("-m")) {
-                    DisguiseOn.asSender(args[0], sender, args);
+                    if (args[1].equalsIgnoreCase("-f")){
+                        disguiseOff.all(sender);
+                    }
+                    else if (Disguise.getConfigManager().isMobAutoDetect() && tabCompleter.entityNames.contains(args[1])){
+                        final String[] newArgs = new String[] { args[0], args[1], "-m"};
+                        disguiseOn.all(args[1], sender, newArgs);
+                    } else {
+                        disguiseOn.all(args[1], sender, args);
+                    }
+                } else if (disguiseOn.ishandleCommand(args) && !Arrays.stream(args).toList().getLast().equalsIgnoreCase("-r")) {
+                    disguiseOn.asSender(args[0], sender, args);
+                } else if (Disguise.getConfigManager().isMobAutoDetect() && tabCompleter.entityNames.contains(args[1])) {
+                    final String[] newArgs = new String[] { args[0], args[1], "-m"};
+                    if (isSender(sender, args)){
+                        disguiseOn.asSender(args[1], sender, newArgs);
+                    } else {
+                        disguiseOn.asPlayer(args[0], args[1], sender, newArgs);
+                    }
                 } else if (isSender(sender, args)) {
-                    DisguiseOn.asSender(args[1], sender, args);
+                    disguiseOn.asSender(args[1], sender, args);
                 } else {
-                    DisguiseOn.asPlayer(args[0], args[1], sender, args);
+                    disguiseOn.asPlayer(args[0], args[1], sender, args);
                 }
                 return true;
             }
             case 3 -> {
                 if (isSender(sender, args)) {
-                    DisguiseOn.asSender(args[1], sender, args);
+                    disguiseOn.asSender(args[1], sender, args);
                 } else if (args[0].equals("*")) {
-                    DisguiseOn.all(args[1], sender, args);
+                    disguiseOn.all(args[1], sender, args);
                 }else {
-                    DisguiseOn.asPlayer(args[0], args[1], sender, args);
+                    disguiseOn.asPlayer(args[0], args[1], sender, args);
                 }
                 return true;
             }
@@ -83,6 +119,20 @@ public class DisguiseCommand implements CommandExecutor {
         if (args[0].equals("*")){
             return false;
         }
-        return sender.getName().equalsIgnoreCase(args[0]) || provider.getInfo((Player) sender).getName().equalsIgnoreCase(args[0]);
+        return sender.getName().equalsIgnoreCase(args[0]) && Bukkit.getPlayerExact(args[0]).equals(sender);
+    }
+
+    private Boolean isCommand(String command){
+        return switch (command.toLowerCase()){
+            case "help", "reload" -> true;
+            default -> false;
+        };
+    }
+
+    private Boolean mobCheck(){
+        if (Disguise.getConfigManager().isRealNameBehaviorForce()){
+            return Disguise.getConfigManager().isMobOverrideRealName();
+        }
+        return true;
     }
 }
